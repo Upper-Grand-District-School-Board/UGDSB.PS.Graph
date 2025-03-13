@@ -10,7 +10,7 @@
     RootModule = 'UGDSB.PS.Graph.psm1'
     
     # Version number of this module.
-    ModuleVersion = '0.1.0'
+    ModuleVersion = '0.1.1'
     
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -68,7 +68,7 @@
     
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     #FunctionsToExport = @()
-    FunctionsToExport = @('Add-GraphGroupMember','Add-GraphIntuneAppAddToESP','Add-GraphIntuneAppAssignment','Copy-GraphIntuneAppAssignments','Disable-GraphUser','Get-GraphAccessPackageAssignments','Get-GraphAccessPackageCatalog','Get-GraphAccessPackages','Get-GraphAccessToken','Get-GraphAPI','Get-GraphAutopilotInformation','Get-GraphDevice','Get-GraphGroup','Get-GraphGroupMembers','Get-GraphHeader','Get-GraphIntuneAPNCertificate','Get-GraphIntuneApp','Get-GraphIntuneAppAssignment','Get-GraphIntuneDEPCertificate','Get-GraphIntuneEnrollmentStatusPage','Get-GraphIntuneFilters','Get-GraphIntuneVPPCertificate','Get-GraphMail','Get-GraphMailAttachment','Get-GraphMailAttachmentContent','Get-GraphMailFolder','Get-GraphMailRules','Get-GraphManagedDevice','Get-GraphSignInAuditLogs','Get-GraphUser','Get-GraphUserGroups','Move-GraphMail','New-GraphGroup','Remove-GraphDevice','Remove-GraphGroupMember','Remove-GraphIntuneApp','Remove-GraphIntuneDevicePrimaryUser','Remove-GraphMailRule','Remove-GraphManagedDevice','Send-GraphMailMessage','Set-GraphAutopilotInformation','Set-GraphIntuneDevicePrimaryUser','Set-GraphMailRead','Test-GraphAcessToken','Test-GraphIntuneAPNCertificate','Test-GraphIntuneDEPCertificate','Test-GraphIntuneLicense','Test-GraphIntuneVPPCertificate')
+    FunctionsToExport = @('Add-GraphGroupMember','Add-GraphIntuneAppAddToESP','Add-GraphIntuneAppAssignment','Copy-GraphIntuneAppAssignments','Disable-GraphUser','Get-GraphAccessPackageAssignments','Get-GraphAccessPackageCatalog','Get-GraphAccessPackages','Get-GraphAccessToken','Get-GraphAPI','Get-GraphApplications','Get-GraphAutopilotInformation','Get-GraphDevice','Get-GraphGroup','Get-GraphGroupMembers','Get-GraphHeader','Get-GraphIntuneAPNCertificate','Get-GraphIntuneApp','Get-GraphIntuneAppAssignment','Get-GraphIntuneDEPCertificate','Get-GraphIntuneEnrollmentStatusPage','Get-GraphIntuneFilters','Get-GraphIntuneVPPCertificate','Get-GraphMail','Get-GraphMailAttachment','Get-GraphMailAttachmentContent','Get-GraphMailFolder','Get-GraphMailRules','Get-GraphManagedDevice','Get-GraphServicePrincipals','Get-GraphSignInAuditLogs','Get-GraphUser','Get-GraphUserGroups','Move-GraphMail','New-GraphGroup','Remove-GraphDevice','Remove-GraphGroupMember','Remove-GraphIntuneApp','Remove-GraphIntuneDevicePrimaryUser','Remove-GraphMailRule','Remove-GraphManagedDevice','Send-GraphMailMessage','Set-GraphAutopilotInformation','Set-GraphIntuneDevicePrimaryUser','Set-GraphMailRead','Test-GraphAcessToken','Test-GraphIntuneAPNCertificate','Test-GraphIntuneDEPCertificate','Test-GraphIntuneLicense','Test-GraphIntuneVPPCertificate')
     
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport = @()
