@@ -2158,7 +2158,7 @@ function Test-GraphIntuneAPNCertificate{
                           "Expiry Date:"  = $APNExpShortDate        
       }
     }
-    Send-TeamsMessage @message | Out-Null
+    Send-TeamsWebhookMessage @message | Out-Null
   }
   if($APNExpirationStatus -and $emailfrom -and $emailto){
     $message = @{
@@ -2224,7 +2224,7 @@ function Test-GraphIntuneDEPCertificate{
                             "Expiry Date:"  = $item.expiry      
         }
       }
-      Send-TeamsMessage @message | Out-Null      
+      Send-TeamsWebhookMessage @message | Out-Null      
     }
   }
   if($alerts -and $emailfrom -and $emailto){
@@ -2328,7 +2328,7 @@ function Test-GraphIntuneVPPCertificate{
                             "Expiry Date:"  = $item.expiry      
         }
       }
-      Send-TeamsMessage @message | Out-Null      
+      Send-TeamsWebhookMessage @message | Out-Null      
     }
   }
   if($alerts -and $emailfrom -and $emailto){

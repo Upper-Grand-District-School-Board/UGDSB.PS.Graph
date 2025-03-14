@@ -42,7 +42,7 @@ function Test-GraphIntuneDEPCertificate{
                             "Expiry Date:"  = $item.expiry      
         }
       }
-      Send-TeamsMessage @message | Out-Null      
+      Send-TeamsWebhookMessage @message | Out-Null      
     }
   }
   if($alerts -and $emailfrom -and $emailto){
