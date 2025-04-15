@@ -15,10 +15,13 @@
 function New-GraphGroup{
   [CmdletBinding()]
   param(
-    [Parameter(Mandatory = $true)][string]$displayName,
-    [Parameter()][bool]$mailEnabled = $false,
-    [Parameter(Mandatory = $true)][string]$mailNickname,
     [Parameter()][string]$description,
+    [Parameter(Mandatory = $true)][string]$displayName,
+    [Parameter()][string[]]$groupTypes,
+    [Parameter(Mandatory = $true)][bool]$mailEnabled,
+    [Parameter(Mandatory = $true)][string]$mailNickname,
+    [Parameter()][string]$membershipRule,
+    [Parameter()][string]$membershipRuleProcessingState = "On",
     [Parameter()][bool]$securityEnabled = $true
   )
   # Confirm we have a valid graph token
@@ -28,7 +31,7 @@ function New-GraphGroup{
   # Build the headers we will use to get groups
   $headers = Get-GraphHeader  
   # Variables
-  $body = $PsBoundParameters | ConvertTo-Json  
+  $body = $PsBoundParameters | ConvertTo-Json 
   # Base URI for resource call
   $uri = "https://graph.microsoft.com/beta/groups"
   try{

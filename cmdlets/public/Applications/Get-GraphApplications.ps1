@@ -50,18 +50,3 @@ function Get-GraphApplications{
     return $applications
   }
 }
-
-<#
-  # Base Endpoint
-  
-
-  $filters =  [System.Collections.Generic.List[PSCustomObject]]@()  
-  if($PSBoundParameters.ContainsKey("displayName")){
-    $filters.Add("=displayName -eq '$($displayName)'") | Out-Null
-  }
-  if($PSBoundParameters.ContainsKey("filter")){
-    $filters.Add($filter) | Out-Null
-  }  
-  $filter = $filters -join " and "
-  $endpoint = "$($endpoint)?$($uriparts -join "&")"    
-#>

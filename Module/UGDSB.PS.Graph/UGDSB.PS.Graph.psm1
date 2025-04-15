@@ -509,22 +509,7 @@ function Get-GraphApplications{
     return $applications
   }
 }
-
-<#
-  # Base Endpoint
-  
-
-  $filters =  [System.Collections.Generic.List[PSCustomObject]]@()  
-  if($PSBoundParameters.ContainsKey("displayName")){
-    $filters.Add("=displayName -eq '$($displayName)'") | Out-Null
-  }
-  if($PSBoundParameters.ContainsKey("filter")){
-    $filters.Add($filter) | Out-Null
-  }  
-  $filter = $filters -join " and "
-  $endpoint = "$($endpoint)?$($uriparts -join "&")"    
-#>
-#EndRegion '.\Public\Get-GraphApplications.ps1' 68
+#EndRegion '.\Public\Get-GraphApplications.ps1' 53
 #Region '.\Public\Get-GraphAutopilotInformation.ps1' 0
 function Get-GraphAutopilotInformation {
   [CmdletBinding()]
@@ -1439,6 +1424,7 @@ function Get-GraphServicePrincipals{
     [Parameter(ParameterSetName = 'appid')][validatenotnullorempty()][string]$appId,
     [Parameter(ParameterSetName = 'displayName')][validatenotnullorempty()][string]$displayName,
     [Parameter(ParameterSetName = 'filter')][ValidateNotNullOrEmpty()][string]$filter,
+    [Parameter()][string[]]$servicePrincipalType,
     [Parameter()][switch]$all,
     [Parameter()][ValidateNotNullOrEmpty()][string]$fields
   )
@@ -1469,6 +1455,7 @@ function Get-GraphServicePrincipals{
       $results = Get-GraphAPI -endpoint $uri -headers $headers -beta -Verbose:$VerbosePreference
       # Add results to a list variable
       foreach ($item in $results.results.value) {
+        if($PSBoundParameters.ContainsKey("servicePrincipalType") -and $item.servicePrincipalType -notin $servicePrincipalType){continue}
         $servicePrincipals.Add($item) | Out-Null
       }
       Write-Verbose "Returned $($results.results.value.Count) results. Current result set is $($servicePrincipals.Count) items." 
@@ -1481,29 +1468,14 @@ function Get-GraphServicePrincipals{
     throw "Unable to get users. $($_.Exception.Message)"
   } 
   if($servicePrincipals.count -eq 0){
-    return $results
+    return $results.Results
   }
   else{
     # Return the group list if it exists
     return $servicePrincipals
   }
 }
-
-<#
-  # Base Endpoint
-  
-
-  $filters =  [System.Collections.Generic.List[PSCustomObject]]@()  
-  if($PSBoundParameters.ContainsKey("displayName")){
-    $filters.Add("=displayName -eq '$($displayName)'") | Out-Null
-  }
-  if($PSBoundParameters.ContainsKey("filter")){
-    $filters.Add($filter) | Out-Null
-  }  
-  $filter = $filters -join " and "
-  $endpoint = "$($endpoint)?$($uriparts -join "&")"    
-#>
-#EndRegion '.\Public\Get-GraphServicePrincipals.ps1' 72
+#EndRegion '.\Public\Get-GraphServicePrincipals.ps1' 59
 #Region '.\Public\Get-GraphSignInAuditLogs.ps1' 0
 <#
   .DESCRIPTION
@@ -1765,10 +1737,13 @@ function Move-GraphMail{
 function New-GraphGroup{
   [CmdletBinding()]
   param(
-    [Parameter(Mandatory = $true)][string]$displayName,
-    [Parameter()][bool]$mailEnabled = $false,
-    [Parameter(Mandatory = $true)][string]$mailNickname,
     [Parameter()][string]$description,
+    [Parameter(Mandatory = $true)][string]$displayName,
+    [Parameter()][string[]]$groupTypes,
+    [Parameter(Mandatory = $true)][bool]$mailEnabled,
+    [Parameter(Mandatory = $true)][string]$mailNickname,
+    [Parameter()][string]$membershipRule,
+    [Parameter()][string]$membershipRuleProcessingState = "On",
     [Parameter()][bool]$securityEnabled = $true
   )
   # Confirm we have a valid graph token
@@ -1778,7 +1753,7 @@ function New-GraphGroup{
   # Build the headers we will use to get groups
   $headers = Get-GraphHeader  
   # Variables
-  $body = $PsBoundParameters | ConvertTo-Json  
+  $body = $PsBoundParameters | ConvertTo-Json 
   # Base URI for resource call
   $uri = "https://graph.microsoft.com/beta/groups"
   try{
@@ -1791,7 +1766,7 @@ function New-GraphGroup{
   }
   
 }
-#EndRegion '.\Public\New-GraphGroup.ps1' 44
+#EndRegion '.\Public\New-GraphGroup.ps1' 47
 #Region '.\Public\Remove-GraphDevice.ps1' 0
 function Remove-GraphDevice{
   [CmdletBinding()]
