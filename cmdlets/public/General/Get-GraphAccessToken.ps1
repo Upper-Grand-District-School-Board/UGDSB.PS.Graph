@@ -20,9 +20,12 @@ function Get-GraphAccessToken{
   if($(Test-GraphAcessToken $script:graphAccessToken)){
     return $script:graphAccessToken
   }  
-  Add-Type -Path "$($PSScriptRoot)\Microsoft.Identity.Client.dll" -ErrorAction SilentlyContinue | Out-Null
+  # If Microsoft.Identity.Client.dll is not loaded, load it
+  try{
+    Add-Type -Path "$($PSScriptRoot)\Microsoft.Identity.Client.dll" -ErrorAction SilentlyContinue | Out-Null
+  }
+  catch{}
   [string[]]$scopes = @("https://graph.microsoft.com/.default")
-
   try{
     if($interactive.IsPresent){
       $clientApp = [Microsoft.Identity.Client.PublicClientApplicationBuilder]::Create($clientId).WithAuthority("https://login.microsoftonline.com/$tenantId").WithDefaultRedirectUri().Build()

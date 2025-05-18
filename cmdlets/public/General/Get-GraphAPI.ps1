@@ -21,13 +21,13 @@ function Get-GraphAPI {
       headers            = $headers
     }
     if ($PSBoundParameters.ContainsKey("body")) { 
-      $vars.add("body", ($body | ConvertTo-JSON))
+      $vars.add("body", ($body | ConvertTo-JSON -Depth 10))
     }
     Write-Verbose "Calling API endpoint: $($uri)" 
     $results = Invoke-RestMethod @Vars
   }
   catch {
-    $ErrorMsg = $script:Error[0]
+    $ErrorMsg = $global:Error[0]
     return $ErrorMsg
   }
   return [PSCustomObject]@{

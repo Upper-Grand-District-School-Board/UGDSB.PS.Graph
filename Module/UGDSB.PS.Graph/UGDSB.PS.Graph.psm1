@@ -392,9 +392,12 @@ function Get-GraphAccessToken{
   if($(Test-GraphAcessToken $script:graphAccessToken)){
     return $script:graphAccessToken
   }  
-  Add-Type -Path "$($PSScriptRoot)\Microsoft.Identity.Client.dll" -ErrorAction SilentlyContinue | Out-Null
+  # If Microsoft.Identity.Client.dll is not loaded, load it
+  try{
+    Add-Type -Path "$($PSScriptRoot)\Microsoft.Identity.Client.dll" -ErrorAction SilentlyContinue | Out-Null
+  }
+  catch{}
   [string[]]$scopes = @("https://graph.microsoft.com/.default")
-
   try{
     if($interactive.IsPresent){
       $clientApp = [Microsoft.Identity.Client.PublicClientApplicationBuilder]::Create($clientId).WithAuthority("https://login.microsoftonline.com/$tenantId").WithDefaultRedirectUri().Build()
@@ -416,7 +419,7 @@ function Get-GraphAccessToken{
     throw "Unable to generate access token. Error message: $($_)"
   }
 }
-#EndRegion '.\Public\Get-GraphAccessToken.ps1' 47
+#EndRegion '.\Public\Get-GraphAccessToken.ps1' 50
 #Region '.\Public\Get-GraphAPI.ps1' 0
 function Get-GraphAPI {
   [CmdletBinding()]
@@ -441,13 +444,13 @@ function Get-GraphAPI {
       headers            = $headers
     }
     if ($PSBoundParameters.ContainsKey("body")) { 
-      $vars.add("body", ($body | ConvertTo-JSON))
+      $vars.add("body", ($body | ConvertTo-JSON -Depth 10))
     }
     Write-Verbose "Calling API endpoint: $($uri)" 
     $results = Invoke-RestMethod @Vars
   }
   catch {
-    $ErrorMsg = $script:Error[0]
+    $ErrorMsg = $global:Error[0]
     return $ErrorMsg
   }
   return [PSCustomObject]@{
@@ -456,6 +459,35 @@ function Get-GraphAPI {
   } 
 }
 #EndRegion '.\Public\Get-GraphAPI.ps1' 38
+#Region '.\Public\Get-GraphApplicationDirectoryExtension.ps1' 0
+function Get-GraphApplicationDirectoryExtension{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$objectId,
+    [Parameter()][validatenotnullorempty()][string]$extensionPropertyId
+  )
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }  
+  # Get Graph Header
+  $headers = Get-GraphHeader  
+  $endpoint = "applications/$($objectId)/extensionProperties"
+  if($PSBoundParameters.ContainsKey("extensionPropertyId")) {$endpoint = "$($endpoint)/$($extensionPropertyId)"} 
+  try{
+    $results = Get-GraphAPI -endpoint $endpoint -headers $headers -beta -Verbose:$VerbosePreference
+  }
+  catch {
+    throw $_
+  } 
+  if($PSBoundParameters.ContainsKey("extensionPropertyId")){
+    return $results.results
+  }
+  else{
+    return $results.results.value
+  }
+  
+}
+#EndRegion '.\Public\Get-GraphApplicationDirectoryExtension.ps1' 28
 #Region '.\Public\Get-GraphApplications.ps1' 0
 function Get-GraphApplications{
   [CmdletBinding(DefaultParameterSetName = "All")]
@@ -1682,6 +1714,36 @@ function Get-GraphUserGroups {
   return $groupList
 }
 #EndRegion '.\Public\Get-GraphUserGroups.ps1' 46
+#Region '.\Public\Get-GraphUserLicenseDetails.ps1' 0
+function Get-GraphUserLicenseDetails{
+  [cmdletbinding()]
+  param(
+    [Parameter(Mandatory = $true,ParameterSetName = 'userPrincipalName')][ValidateNotNullOrEmpty()][string]$userPrincipalName,
+    [Alias("id")][Parameter(Mandatory = $true, ParameterSetName = 'userid')][ValidateNotNullOrEmpty()][string]$userid    
+  )
+  # Confirm we have a valid graph token
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }
+  $headers = Get-GraphHeader  
+  if ($PSBoundParameters.ContainsKey("userPrincipalName")) { 
+    $endpoint = "users/$($userPrincipalName)/licenseDetails"
+  }
+  elseif ($PSBoundParameters.ContainsKey("userid")) { 
+    $endpoint = "users/$($userid)/licenseDetails"
+  }
+  try{
+    $results = Get-GraphAPI -endpoint $endpoint -Method Get -headers $headers -beta -Verbose:$VerbosePreference
+    if($results.StatusCode -ne 200){
+      throw "Unable to retrieve user license details. $($results)"
+    }    
+  }
+  catch {
+    throw $_
+  } 
+  return $results.Results.value
+}
+#EndRegion '.\Public\Get-GraphUserLicenseDetails.ps1' 29
 #Region '.\Public\Move-GraphMail.ps1' 0
 <#
   .DESCRIPTION
@@ -1719,6 +1781,119 @@ function Move-GraphMail{
   }      
 }
 #EndRegion '.\Public\Move-GraphMail.ps1' 36
+#Region '.\Public\New-GraphApplicationDirectoryExtension.ps1' 0
+function New-GraphApplicationDirectoryExtension{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$objectId,
+    [Parameter(Mandatory = $true)][validateSet("Binary","Boolean","DateTime","Integer","LargeInteger","String")][string]$dataType,
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$name,
+    [Parameter()][switch]$isMultiValued,
+    [Parameter(Mandatory = $true)][validateSet("User","Group","AdministrativeUnit","Application","Device","Organization")][string[]]$targetObjects
+  )   
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }  
+  # Get Graph Header
+  $headers = Get-GraphHeader  
+  $endpoint = "applications/$($objectId)/extensionProperties"
+  # Set body for request
+  $body = [PSCustomObject]@{
+    name = $name
+    dataType = $dataType
+    isMultiValued = $isMultiValued.IsPresent
+    targetObjects = $targetObjects
+  }
+  # Call API Endpoint to create application
+  try {
+    $results = Get-GraphAPI -endpoint $endpoint -Method Post -headers $headers -body $body -beta -Verbose:$VerbosePreference
+    if($results.StatusCode -ne 201){
+      throw "Unable to create extension attribute for appplication. $($results)"
+    }
+  }
+  catch {
+    throw $_
+  }
+  return $results.Results   
+}
+#EndRegion '.\Public\New-GraphApplicationDirectoryExtension.ps1' 35
+#Region '.\Public\New-GraphApplicationPassword.ps1' 0
+function New-GraphApplicationPassword{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$objectId,
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$secretName,
+    [Parameter()][datetime]$secretExpiry = (Get-Date).AddYears(1)
+  )
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  } 
+  # Get Graph Header
+  $headers = Get-GraphHeader  
+  $endpoint = "applications/$($objectId)/addPassword"
+  # Create body for request
+  $body = @{
+    passwordCredential = @{
+      displayName = $secretName
+      endDateTime = $secretExpiry.ToString("yyyy-MM-ddTHH:mm:ssZ")
+    }
+  }
+  # Call API Endpoint to create application
+  try {
+    $results = Get-GraphAPI -endpoint $endpoint -Method Post -headers $headers -body $body -beta -Verbose:$VerbosePreference
+    if($results.StatusCode -ne 200){
+      throw "Unable to create password for appplication. $($results)"
+    }
+  }
+  catch {
+    throw $_
+  }
+  return $results.Results   
+}
+#EndRegion '.\Public\New-GraphApplicationPassword.ps1' 33
+#Region '.\Public\New-GraphApplications.ps1' 0
+function New-GraphApplications{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$applicationName,
+    [Parameter()][validatenotnullorempty()][string]$secretName,
+    [Parameter()][datetime]$secretExpiry = (Get-Date).AddYears(1),
+    [Parameter()][validatenotnullorempty()][Object[]]$appRoles
+  )
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }  
+  # Get Graph Header
+  $headers = Get-GraphHeader  
+  $endpoint = "applications"
+  # Create body for request
+  $body = @{
+    displayName = $applicationName
+  }
+  # If roles are in the request add them to the body
+  if($PSBoundParameters.ContainsKey("appRoles")) {$body.Add("appRoles", $appRoles)}
+  # If set to create a secret
+  if($PSBoundParameters.ContainsKey("secretName")) {
+    $body.Add("passwordCredentials", @(
+      @{
+        displayName = $secretName
+        endDateTime = $secretExpiry.ToString("yyyy-MM-ddTHH:mm:ssZ")
+      }
+    ))
+  }
+  # Call API Endpoint to create application
+  try {
+    $results = Get-GraphAPI -endpoint $endpoint -Method Post -headers $headers -body $body -beta -Verbose:$VerbosePreference
+    if($results.StatusCode -ne 201){
+      throw "Unable to create application. $($results)"
+    }
+  }
+  catch {
+    throw $_
+  }
+  return $results.Results
+}
+#EndRegion '.\Public\New-GraphApplications.ps1' 42
 #Region '.\Public\New-GraphGroup.ps1' 0
 <#
   .DESCRIPTION
@@ -1767,6 +1942,112 @@ function New-GraphGroup{
   
 }
 #EndRegion '.\Public\New-GraphGroup.ps1' 47
+#Region '.\Public\New-GraphServicePrinciapls.ps1' 0
+function New-GraphServicePrinciapls{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$applicationId
+  )  
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }  
+  # Get Graph Header
+  $headers = Get-GraphHeader  
+  $endpoint = "servicePrincipals"
+  # Create body for request
+  $body = @{
+    appId = $applicationId
+  }
+  # Call API Endpoint to create application
+  try {
+    $results = Get-GraphAPI -endpoint $endpoint -Method Post -headers $headers -body $body -beta -Verbose:$VerbosePreference
+    if($results.StatusCode -ne 201){
+      throw "Unable to create application. $($results)"
+    }
+  }
+  catch {
+    throw $_
+  }
+  return $results.Results  
+}
+#EndRegion '.\Public\New-GraphServicePrinciapls.ps1' 28
+#Region '.\Public\Remove-GraphApplicationDirectoryExtension.ps1' 0
+function Remove-GraphApplicationDirectoryExtension{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$objectId,
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$extensionPropertyId
+  )
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }  
+  # Get Graph Header
+  $headers = Get-GraphHeader  
+  $endpoint = "applications/$($objectId)/extensionProperties/$($extensionPropertyId)"
+  try{
+    $results = Get-GraphAPI -endpoint $endpoint -Method Delete -headers $headers -beta -Verbose:$VerbosePreference
+    if($results.StatusCode -ne 204){
+      throw "Unable to delete extension attribute for appplication. $($results)"
+    }    
+  }
+  catch {
+    throw $_
+  }   
+}
+#EndRegion '.\Public\Remove-GraphApplicationDirectoryExtension.ps1' 23
+#Region '.\Public\Remove-GraphApplicationPassword.ps1' 0
+function Remove-GraphApplicationPassword{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$objectId,
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$secretKeyId
+  )
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  } 
+  # Get Graph Header
+  $headers = Get-GraphHeader  
+  $endpoint = "applications/$($objectId)/removePassword"
+  # Create body for request
+  $body = @{
+    keyId = $secretKeyId
+  }
+  # Call API Endpoint to create application
+  try {
+    $results = Get-GraphAPI -endpoint $endpoint -Method Post -headers $headers -body $body -beta -Verbose:$VerbosePreference
+    if($results.StatusCode -ne 204){
+      throw "Unable to remove password for appplication. $($results)"
+    }
+  }
+  catch {
+    throw $_
+  } 
+}
+#EndRegion '.\Public\Remove-GraphApplicationPassword.ps1' 28
+#Region '.\Public\Remove-GraphApplications.ps1' 0
+function Remove-GraphApplications{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$objectId
+  )
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  } 
+  # Get Graph Header
+  $headers = Get-GraphHeader  
+  $endpoint = "applications/$($objectId)"
+  # Call API Endpoint to create application
+  try {
+    $results = Get-GraphAPI -endpoint $endpoint -Method Delete -headers $headers -beta -Verbose:$VerbosePreference
+    if($results.StatusCode -ne 204){
+      throw "Unable to remove appplication. $($results)"
+    }
+  }
+  catch {
+    throw $_
+  }   
+}
+#EndRegion '.\Public\Remove-GraphApplications.ps1' 23
 #Region '.\Public\Remove-GraphDevice.ps1' 0
 function Remove-GraphDevice{
   [CmdletBinding()]
@@ -1973,6 +2254,37 @@ function Send-GraphMailMessage{
   return $statuscode
 }
 #EndRegion '.\Public\Send-GraphMailMessage.ps1' 70
+#Region '.\Public\Set-GraphApplications.ps1' 0
+# https://learn.microsoft.com/en-us/graph/api/application-update?view=graph-rest-beta&tabs=http
+function Set-GraphApplications{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][validatenotnullorempty()][string]$objectId,
+    [Parameter()][validatenotnullorempty()][string]$applicationName,
+    [Parameter()][validatenotnullorempty()][Object[]]$appRoles
+  )
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }  
+  # Get Graph Header
+  $headers = Get-GraphHeader  
+  $endpoint = "applications/$($objectId)"
+  # Create body for request
+  $body = @{}
+  if($PSBoundParameters.ContainsKey("applicationName")) {$body.Add("displayName", $applicationName)}
+  if($PSBoundParameters.ContainsKey("appRoles")) {$body.Add("appRoles", $appRoles)}
+  # Call API Endpoint to create application
+  try {
+    $results = Get-GraphAPI -endpoint $endpoint -Method Patch -headers $headers -body $body -beta -Verbose:$VerbosePreference
+    if($results.StatusCode -ne 204 ){
+      throw "Unable to update application. $($results)"
+    }
+  }
+  catch {
+    throw $_
+  }
+}
+#EndRegion '.\Public\Set-GraphApplications.ps1' 30
 #Region '.\Public\Set-GraphAutopilotInformation.ps1' 0
 function Set-GraphAutopilotInformation {
   param (
@@ -2064,6 +2376,44 @@ function Set-GraphMailRead{
   }  
 }
 #EndRegion '.\Public\Set-GraphMailRead.ps1' 34
+#Region '.\Public\Set-GraphUser.ps1' 0
+function Set-GraphUser{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true,ParameterSetName = 'userPrincipalName')][ValidateNotNullOrEmpty()][string]$userPrincipalName,
+    [Alias("id")][Parameter(Mandatory = $true, ParameterSetName = 'userid')][ValidateNotNullOrEmpty()][string]$userid,
+    [Parameter()][hashtable]$extensionProperties
+  )
+  # Confirm we have a valid graph token
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }
+  $headers = Get-GraphHeader  
+  if ($PSBoundParameters.ContainsKey("userPrincipalName")) { 
+    $endpoint = "users/$($userPrincipalName)"
+  }
+  elseif ($PSBoundParameters.ContainsKey("userid")) { 
+    $endpoint = "users/$($userid)"
+  }
+  # Create base body object
+  $body = @{}
+  # If extension properties are passed, add them to the request body
+  if ($PSBoundParameters.ContainsKey("extensionProperties")){
+    foreach($item in $extensionProperties.GetEnumerator()){
+      $body.Add($item.Key,$item.Value) | Out-Null
+    }
+  }
+  try{
+    $results = Get-GraphAPI -endpoint $endpoint -Method Patch -headers $headers -body $body -beta -Verbose:$VerbosePreference
+    if($results.StatusCode -ne 204){
+      throw "Unable to update user. $($results)"
+    }    
+  }
+  catch {
+    throw $_
+  } 
+}
+#EndRegion '.\Public\Set-GraphUser.ps1' 37
 #Region '.\Public\Test-GraphAcessToken.ps1' 0
 <#
   .DESCRIPTION
