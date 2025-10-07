@@ -178,6 +178,72 @@ function Add-GraphIntuneAppAssignment{
   }
 }
 #EndRegion '.\Public\Add-GraphIntuneAppAssignment.ps1' 82
+#Region '.\Public\Add-GraphOATHToken.ps1' 0
+function Add-GraphOATHToken {
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][string]$serialNumber,
+    [Parameter(Mandatory = $true)][string]$manufacturer,
+    [Parameter(Mandatory = $true)][string]$model,
+    [Parameter(Mandatory = $true)][string]$secretKey,
+    [Parameter(Mandatory = $true)][int]$timeIntervalInSeconds,
+    [Parameter()][string]$assignTo
+  )
+  # Confirm we have a valid graph token
+  if (!$(Test-GraphAcessToken $script:graphAccessToken)) {
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }
+  # Get Graph Header
+  $headers = Get-GraphHeader   
+  $endpoint = "directory/authenticationMethodDevices/hardwareOathDevices"
+  $body = @{
+    "serialNumber"          = $serialNumber
+    "manufacturer"          = $manufacturer
+    "model"                 = $model
+    "secretKey"             = $secretKey
+    "timeIntervalInSeconds" = $timeIntervalInSeconds
+  }
+  if ($PSBoundParameters.ContainsKey("assignTo")) {
+    $body["assignTo"] = @{id = $assignTo }
+  }
+  try {
+    $results = Get-GraphAPI -method post -endpoint $endpoint -headers $headers -body $body -beta -Verbose:$VerbosePreference
+    $results = ($results | ConvertFrom-Json)
+    if($results.error){
+      throw "Unable to add token. Code: $($results.error.code). Message: $($results.error.message)"
+    }
+  }
+  catch {
+    throw "Unable to add token. $($_.Exception.Message)"
+  }
+}
+
+<#
+  # Get Graph Header
+  $headers = Get-GraphHeader   
+  $endpoint = "directory/authenticationMethodDevices/hardwareOathDevices"
+  $body = @{
+    "serialNumber"          = $serialNumber
+    "manufacturer"          = $manufacturer
+    "model"                 = $model
+    "secretKey"             = $secretKey
+    "timeIntervalInSeconds" = $timeIntervalInSeconds
+  }
+  if ($PSBoundParameters.ContainsKey("assignTo")) {
+    $body["assignTo"] = @{id = $assignTo }
+  }
+  try {
+    $results = Get-GraphAPI -method post -endpoint $endpoint -headers $headers -body $body -beta -Verbose:$VerbosePreference
+    $results = ($results | ConvertFrom-Json)
+    if($results.error){
+      throw "Unable to add token. Code: $($results.error.code). Message: $($results.error.message)"
+    }
+  }
+  catch {
+    throw "Unable to add token. $($_.Exception.Message)"
+  }
+#>
+#EndRegion '.\Public\Add-GraphOATHToken.ps1' 65
 #Region '.\Public\Copy-GraphIntuneAppAssignments.ps1' 0
 function Copy-GraphIntuneAppAssignments{
   [CmdletBinding()]
@@ -235,6 +301,38 @@ function Disable-GraphUser{
   Invoke-RestMethod -Method PATCH -Uri $endpoint -Headers $headers -body ($body | ConvertTo-Json) -StatusCodeVariable statusCode
 }
 #EndRegion '.\Public\Disable-GraphUser.ps1' 23
+#Region '.\Public\Enter-GraphOATHTokenActivation.ps1' 0
+function Enter-GraphOATHTokenActivation{
+  [CmdletBinding(DefaultParameterSetName = "all")]
+  param(  
+    [Parameter(Mandatory=$True)][string]$id,
+    [Parameter(Mandatory=$True)][int]$code,
+    [Parameter(Mandatory=$True, ParameterSetName = "userid")][string]$userid,
+    [Parameter(Mandatory=$True, ParameterSetName = "upn")][string]$userPrincipalName    
+  )
+  # Confirm we have a valid graph token
+  if (!$(Test-GraphAcessToken $script:graphAccessToken)) {
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }
+  # Get Graph Header
+  $headers = Get-GraphHeader   
+  if ($PSBoundParameters.ContainsKey("userid")) {
+    $endpoint = "users/$($userid)/authentication/hardwareOathMethods/$($id)/activate"
+  }
+  elseif ($PSBoundParameters.ContainsKey("userPrincipalName")) {
+    $endpoint = "users/$($userPrincipalName)/authentication/hardwareOathMethods/$($id)/activate"
+  }
+  $body = @{
+    verificationCode = $code
+  }
+  try {
+    Get-GraphAPI -method post -endpoint $endpoint -headers $headers -body $body -beta -Verbose:$VerbosePreference
+  }
+  catch {
+    throw "Unable to add token. $($_.Exception.Message)"
+  }  
+}
+#EndRegion '.\Public\Enter-GraphOATHTokenActivation.ps1' 31
 #Region '.\Public\Get-GraphAccessPackageAssignments.ps1' 0
 function Get-GraphAccessPackageAssignments{
   [cmdletBinding()]
@@ -542,6 +640,61 @@ function Get-GraphApplications{
   }
 }
 #EndRegion '.\Public\Get-GraphApplications.ps1' 53
+#Region '.\Public\Get-GraphAutopilotDevices.ps1' 0
+function Get-GraphAutopilotDevices{
+  [CmdletBinding()]
+  [OutputType([System.Collections.Generic.List[PSCustomObject]])]  
+  param(
+    [Parameter()][ValidateNotNullOrEmpty()][string[]]$id,
+    [Parameter()][switch]$all, 
+    [Parameter(ParameterSetName = 'filter')][ValidateNotNullOrEmpty()][string]$filter,    
+    [Parameter()][ValidateNotNullOrEmpty()][string]$fields
+  )
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }
+  # Build the headers we will use to get groups
+  $headers = Get-GraphHeader
+  # Base URI for resource call
+  $endpoint = "deviceManagement/windowsAutopilotDeviceIdentities"
+  if($PSBoundParameters.ContainsKey("id")){
+    $endpoint = "$($endpoint)/$($id)"
+  }
+  $uriparts = [System.Collections.Generic.List[PSCustomObject]]@()  
+  if ($PSBoundParameters.ContainsKey("filter")) {$uriparts.add("`$filter=$($filter)")}  
+  if ($PSBoundParameters.ContainsKey("fields")) {$uriparts.add("`$select=$($fields)")}
+  # Generate the final API endppoint URI
+  $endpoint = "$($endpoint)?$($uriparts -join "&")"  
+  try {
+    # Create empty list
+    $devices =  [System.Collections.Generic.List[PSCustomObject]]@()  
+    $uri = $endpoint
+    do {
+      # Execute call against graph
+      $results = Get-GraphAPI -endpoint $uri -headers $headers -beta -Verbose:$VerbosePreference
+      # Add results to a list variable
+      foreach ($item in $results.results.value) {
+        $devices.Add($item) | Out-Null
+      }
+      Write-Verbose "Returned $($results.results.value.Count) results. Current result set is $($devices.Count) items." 
+      if ($results.results."@odata.nextLink") {
+        $uri = [REGEX]::Match($results.results."@odata.nextLink", "deviceManagement.*").Value
+      }
+    }while ($null -ne $results.results."@odata.nextLink" -and $all.IsPresent)
+  }
+  catch {
+    throw "Unable to get autopilot devices. $($_.Exception.Message)"
+  } 
+  if($devices.count -eq 0){
+    return $results.Results
+  }
+  else{
+    # Return the group list if it exists
+    return $devices
+  }
+
+}
+#EndRegion '.\Public\Get-GraphAutopilotDevices.ps1' 54
 #Region '.\Public\Get-GraphAutopilotInformation.ps1' 0
 function Get-GraphAutopilotInformation {
   [CmdletBinding()]
@@ -611,6 +764,7 @@ function Get-GraphDevice{
     [Parameter()][ValidateNotNullOrEmpty()][string[]]$deviceId,
     [Parameter()][ValidateNotNullOrEmpty()][bool]$accountEnabled,
     [Parameter()][ValidateNotNullOrEmpty()][string]$displayName,
+    [Parameter()][ValidateNotNullOrEmpty()][string]$filter,
     [Parameter()][ValidateNotNullOrEmpty()][string]$fields
   )
   if(!$(Test-GraphAcessToken $script:graphAccessToken)){
@@ -626,6 +780,9 @@ function Get-GraphDevice{
   }
   if($deviceId.count -eq 1){  
     $filters.Add("deviceId eq '$($deviceId)'") | Out-Null
+  }
+  if ($PSBoundParameters.ContainsKey("filter")){
+    $filters.Add($filter) | Out-Null
   }
   $batch = $false
   # General endpoint
@@ -754,7 +911,7 @@ function Get-GraphDevice{
     return $deviceList
   }
 }
-#EndRegion '.\Public\Get-GraphDevice.ps1' 155
+#EndRegion '.\Public\Get-GraphDevice.ps1' 159
 #Region '.\Public\Get-GraphGroup.ps1' 0
 <#
   .DESCRIPTION
@@ -1448,6 +1605,101 @@ function Get-GraphManagedDevice{
   return $deviceList
 }
 #EndRegion '.\Public\Get-GraphManagedDevice.ps1' 168
+#Region '.\Public\Get-GraphOATHToken.ps1' 0
+function Get-GraphOATHToken {
+  [CmdletBinding(DefaultParameterSetName = "all")]
+  param(
+    [Parameter()][string]$id,
+    [Parameter(ParameterSetName = "userid")][string]$userid,
+    [Parameter(ParameterSetName = "upn")][string]$userPrincipalName,
+    [Parameter()][string]$serialNumber,
+    [Parameter()][string]$manufacturer,
+    [Parameter()][string]$model,
+    [Parameter()][ValidateSet("available", "assigned", "activated", "failedactivation")][string]$status
+  )
+  # Confirm we have a valid graph token
+  if (!$(Test-GraphAcessToken $script:graphAccessToken)) {
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }
+  # Get Graph Header
+  $headers = Get-GraphHeader   
+  $endpoint = "directory/authenticationMethodDevices/hardwareOathDevices"
+  if ($PSBoundParameters.ContainsKey("userid")) {
+    $endpoint = "users/$($userid)/authentication/hardwareOathMethods"
+  }
+  elseif ($PSBoundParameters.ContainsKey("userPrincipalName")) {
+    $endpoint = "users/$($userPrincipalName)/authentication/hardwareOathMethods"
+  }
+  $filters = [System.Collections.Generic.List[PSCustomObject]]@()  
+  if ($PSBoundParameters.ContainsKey("id")) { $filters.Add("id eq '$($id)'") | Out-Null }
+  if ($PSBoundParameters.ContainsKey("serialNumber")) { $filters.Add("serialNumber eq '$($serialNumber)'") | Out-Null }
+  if ($PSBoundParameters.ContainsKey("manufacturer")) { $filters.Add("manufacturer eq '$($manufacturer)'") | Out-Null }
+  if ($PSBoundParameters.ContainsKey("model")) { $filters.Add("model eq '$($model)'") | Out-Null }
+  if ($PSBoundParameters.ContainsKey("status")) { $filters.Add("status eq '$($status)'") | Out-Null }
+  # Create query string for the filter
+  $filterList = $filters -join " and "
+  # Get Graph Headers for Call
+  $headers = Get-GraphHeader       
+  # Setup endpoint based on if filter or fields are passed
+  if ($filterList) {
+    $endpoint = "$($endpoint)?`$filter=$($filterList)"
+  }  
+  # Try to call graph API and get results back
+  try {
+    # Create empty list
+    $devices =  [System.Collections.Generic.List[PSCustomObject]]@()  
+    $uri = $endpoint
+    do {
+      # Execute call against graph
+      $results = Get-GraphAPI -endpoint $uri -headers $headers -beta -Verbose:$VerbosePreference
+      # Add results to a list variable
+      foreach ($item in $results.results.value) {
+        $devices.Add($item) | Out-Null
+      }
+      Write-Verbose "Returned $($results.results.value.Count) results. Current result set is $($devices.Count) items." 
+      if ($results.results."@odata.nextLink") {
+        if ($PSBoundParameters.ContainsKey("userid") -or $PSBoundParameters.ContainsKey("userPrincipalName")){
+          $uri = [REGEX]::Match($results.results."@odata.nextLink", "users.*").Value
+        } 
+        else{
+          $uri = [REGEX]::Match($results.results."@odata.nextLink", "directory.*").Value
+        }
+      }
+    }while ($null -ne $results.results."@odata.nextLink" -and $all.IsPresent)
+  }
+  catch {
+    throw "Unable to get autopilot devices. $($_.Exception.Message)"
+  } 
+  if($devices.count -eq 0){
+    return $results.Results
+  }
+  else{
+    # Return the group list if it exists
+    return $devices
+  }    
+}
+#EndRegion '.\Public\Get-GraphOATHToken.ps1' 73
+#Region '.\Public\Get-GraphSerivcePrincipalsSyncJobs.ps1' 0
+function Get-GraphSerivcePrincipalsSyncJobs{
+  [CmdletBinding()]
+  param(
+    [Parameter(ParameterSetName = 'id')][validatenotnullorempty()][string]$id
+  )
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }
+  # Get Graph Header
+  $headers = Get-GraphHeader  
+  $endpoint = "servicePrincipals/$($id)/synchronization/jobs"  
+  try {
+    $results = Get-GraphAPI -endpoint $endpoint -headers $headers -beta -Verbose:$VerbosePreference
+  }
+  catch {
+    throw "Unable to add token. $($_.Exception.Message)"
+  }
+  return $results.value
+}
+#EndRegion '.\Public\Get-GraphSerivcePrincipalsSyncJobs.ps1' 20
 #Region '.\Public\Get-GraphServicePrincipals.ps1' 0
 function Get-GraphServicePrincipals{
   [CmdletBinding(DefaultParameterSetName = "All")]
@@ -1473,7 +1725,7 @@ function Get-GraphServicePrincipals{
     $endpoint = "$($endpoint)(appid=$($id))"
   }
   $uriparts = [System.Collections.Generic.List[PSCustomObject]]@()
-  if ($PSBoundParameters.ContainsKey("displayName")) {$uriparts.add("`$filter=displayName -eq '$($displayName)'")}
+  if ($PSBoundParameters.ContainsKey("displayName")) {$uriparts.add("`$filter=startsWith(displayName,'$($displayName)')")}
   if ($PSBoundParameters.ContainsKey("filter")) {$uriparts.add("`$filter=$($filter)")}
   if ($PSBoundParameters.ContainsKey("fields")) {$uriparts.add("`$select=$($fields)")}
   # Generate the final API endppoint URI
@@ -2048,6 +2300,28 @@ function Remove-GraphApplications{
   }   
 }
 #EndRegion '.\Public\Remove-GraphApplications.ps1' 23
+#Region '.\Public\Remove-GraphAutopilotDevice.ps1' 0
+function Remove-GraphAutopilotDevice{
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][string]$id
+  )
+  if(!$(Test-GraphAcessToken $script:graphAccessToken)){
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  } 
+  # Get Graph Headers for Call
+  $headers = Get-GraphHeader  
+  # URI Endpoint
+  $endpoint = "deviceManagement/windowsAutopilotDeviceIdentities/$($id)"
+  try{
+    $uri = $endpoint
+    Get-GraphAPI -endpoint $uri -Method Delete -headers $headers -beta -Verbose:$VerbosePreference | Out-Null
+  }
+  catch{
+    throw "Unable to delete devices. $($_.Exception.Message)"
+  } 
+}
+#EndRegion '.\Public\Remove-GraphAutopilotDevice.ps1' 21
 #Region '.\Public\Remove-GraphDevice.ps1' 0
 function Remove-GraphDevice{
   [CmdletBinding()]
@@ -2183,6 +2457,66 @@ function Remove-GraphManagedDevice{
   }   
 }
 #EndRegion '.\Public\Remove-GraphManagedDevice.ps1' 21
+#Region '.\Public\Remove-GraphOATHToken.ps1' 0
+function Remove-GraphOATHToken{
+  [CmdletBinding()]
+  param(  
+    [Parameter(Mandatory=$True)][string]$id,
+    [Parameter()][switch]$force
+  )  
+  # Confirm we have a valid graph token
+  if (!$(Test-GraphAcessToken $script:graphAccessToken)) {
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet "
+  }
+  $token = Get-GraphOATHToken -id $id
+  if($token.assignedTo){
+    if($force.IsPresent){
+      foreach($user in $token.assignedTo){
+        Remove-GraphOATHTokenAssignment -id $id -userid $user.id -Verbose:$VerbosePreference
+      }
+    }
+    else{
+      throw "Token is assigned to user. Please remove assignment before deleting token or use -force to have it be removed automatically."
+    }
+  }
+  $headers = Get-GraphHeader   
+  $endpoint = "directory/authenticationMethodDevices/hardwareOathDevices/$($id)"
+  try {
+    Get-GraphAPI -method delete -endpoint $endpoint -headers $headers -beta -Verbose:$VerbosePreference
+  }
+  catch {
+    throw "Unable to remove token. $($_.Exception.Message)"
+  }    
+}
+#EndRegion '.\Public\Remove-GraphOATHToken.ps1' 31
+#Region '.\Public\Remove-GraphOATHTokenAssignment.ps1' 0
+function Remove-GraphOATHTokenAssignment{
+  [CmdletBinding(DefaultParameterSetName = "all")]
+  param(  
+    [Parameter(Mandatory=$True)][string]$id,
+    [Parameter(Mandatory=$True, ParameterSetName = "userid")][string]$userid,
+    [Parameter(Mandatory=$True, ParameterSetName = "upn")][string]$userPrincipalName
+  )
+  # Confirm we have a valid graph token
+  if (!$(Test-GraphAcessToken $script:graphAccessToken)) {
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }
+  # Get Graph Header
+  $headers = Get-GraphHeader   
+  if ($PSBoundParameters.ContainsKey("userid")) {
+    $endpoint = "users/$($userid)/authentication/hardwareOathMethods/$($id)"
+  }
+  elseif ($PSBoundParameters.ContainsKey("userPrincipalName")) {
+    $endpoint = "users/$($userPrincipalName)/authentication/hardwareOathMethods/$($id)"
+  }
+  try {
+    Get-GraphAPI -method delete -endpoint $endpoint -headers $headers -beta -Verbose:$VerbosePreference | Out-Null
+  }
+  catch {
+    throw "Unable to delete token assignment. $($_.Exception.Message)"
+  }  
+}
+#EndRegion '.\Public\Remove-GraphOATHTokenAssignment.ps1' 27
 #Region '.\Public\Send-GraphMailMessage.ps1' 0
 function Send-GraphMailMessage{
   [CmdletBinding()]
@@ -2323,6 +2657,121 @@ function Set-GraphAutopilotInformation {
   }   
 }
 #EndRegion '.\Public\Set-GraphAutopilotInformation.ps1' 37
+#Region '.\Public\Set-GraphDevice.ps1' 0
+function Set-GraphDevice {
+  [CmdletBinding()]
+  param(
+    [Parameter()][ValidateNotNullOrEmpty()][string[]]$id,
+    [Parameter()][ValidateNotNullOrEmpty()][string[]]$deviceId,
+    [Parameter()][hashtable]$extensionProperties,
+    [Parameter()][hashtable]$extensionAttributes
+  )
+  if (!$(Test-GraphAcessToken $script:graphAccessToken)) {
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  } 
+  # General endpoint
+  $endpoint = "devices"  
+  $batch = $false
+  if ($id.count -eq 1) {
+    $endpoint = "$($endpoint)/$($id)"
+  }
+  elseif ($id.count -gt 1 -or $deviceId.count -gt 1) {
+    $batch = $true
+  }
+  # Get Graph Headers for Call
+  $headers = Get-GraphHeader  
+  # Create base body object
+  $body = @{}
+  # If extension properties are passed, add them to the request body
+  if ($PSBoundParameters.ContainsKey("extensionProperties")) {
+    foreach ($item in $extensionProperties.GetEnumerator()) {
+      $body.Add($item.Key, $item.Value) | Out-Null
+    }
+  }
+  # If extension extensionAttributes are passed, add them to the request body
+  if ($PSBoundParameters.ContainsKey("extensionAttributes")) {
+    $attributes = @{}
+    foreach ($item in $extensionAttributes.GetEnumerator()) {
+      $attributes.Add($item.Key, $item.Value) | Out-Null
+    }
+    $body.Add("extensionAttributes", $attributes) | Out-Null
+  }
+  # If ID and deviceID are not an array
+  if (-not $batch) {
+    try {
+      $results = Get-GraphAPI -endpoint $endpoint -Method Patch -headers $headers -body $body -beta -Verbose:$VerbosePreference
+      if ($results.StatusCode -ne 204) {
+        throw "Unable to update device. $($results)"
+      }    
+    }
+    catch {
+      throw $_
+    }
+  }
+  else {
+
+    $objid = 1
+    $batchObj = [System.Collections.Generic.List[PSCustomObject]]@()
+    $batches = [System.Collections.Generic.List[PSCustomObject]]@()
+    # if trying to return multiple ids
+    if($id.count -gt 1){
+      foreach($device in $id){
+        if($objid -lt 21){
+          $uri = "$($endpoint)/$($device)"
+          $obj = [PSCustomObject]@{
+            "id" = $objid
+            "method" = "PATCH"
+            "url" = $uri
+            "body" = $body
+            "headers" = @{"Content-Type" = "application/json"}
+          }
+          $batchObj.Add($obj) | Out-Null
+          $objid++          
+        }
+        if($objId -eq 21){
+          $batches.Add($batchObj) | Out-Null
+          $batchObj = $null
+          $batchObj = [System.Collections.Generic.List[PSCustomObject]]@()
+          $objid = 1 
+        }        
+      }
+      $batches.Add($batchObj) | Out-Null
+    }
+    # if trying to return multiple deviceids
+    elseif($deviceId.Count -gt 1){
+      foreach($device in $deviceId){
+        if($objid -lt 21){
+          $uri = "$($endpoint)/$($device)"
+          $obj = [PSCustomObject]@{
+            "id" = $objid
+            "method" = "PATCH"
+            "url" = $uri
+            "body" = $body
+            "headers" = @{"Content-Type" = "application/json"}
+          }
+          $batchObj.Add($obj) | Out-Null
+          $objid++          
+        }
+        if($objId -eq 21){
+          $batches.Add($batchObj) | Out-Null
+          $batchObj = $null
+          $batchObj = [System.Collections.Generic.List[PSCustomObject]]@()
+          $objid = 1 
+        }        
+      }
+      $batches.Add($batchObj) | Out-Null
+    }
+    for($x = 0; $x -lt $batches.count; $x++){
+      if($batches[$x].count -gt 0){
+        $json = [PSCustomObject]@{
+          "requests" = $batches[$x] 
+        } | ConvertTo-JSON -Depth 10
+        $results = Invoke-RestMethod -Method "POST" -Uri "https://graph.microsoft.com/beta/`$batch" -Headers $headers -Body $json
+      }    
+    }
+  }
+}
+#EndRegion '.\Public\Set-GraphDevice.ps1' 114
 #Region '.\Public\Set-GraphIntuneDevicePrimaryUser.ps1' 0
 function Set-GraphIntuneDevicePrimaryUser{
   param(
@@ -2376,6 +2825,39 @@ function Set-GraphMailRead{
   }  
 }
 #EndRegion '.\Public\Set-GraphMailRead.ps1' 34
+#Region '.\Public\Set-GraphOATHTokenAssignment.ps1' 0
+function Set-GraphOATHTokenAssignment{
+  [CmdletBinding(DefaultParameterSetName = "all")]
+  param(  
+    [Parameter(Mandatory=$True)][string]$id,
+    [Parameter(Mandatory=$True, ParameterSetName = "userid")][string]$userid,
+    [Parameter(Mandatory=$True, ParameterSetName = "upn")][string]$userPrincipalName
+  )
+  # Confirm we have a valid graph token
+  if (!$(Test-GraphAcessToken $script:graphAccessToken)) {
+    throw "Please Call Get-GraphAccessToken before calling this cmdlet"
+  }
+  # Get Graph Header
+  $headers = Get-GraphHeader   
+  if ($PSBoundParameters.ContainsKey("userid")) {
+    $endpoint = "users/$($userid)/authentication/hardwareOathMethods"
+  }
+  elseif ($PSBoundParameters.ContainsKey("userPrincipalName")) {
+    $endpoint = "users/$($userPrincipalName)/authentication/hardwareOathMethods"
+  }
+  $body = @{
+    device = @{
+      "id" = $id
+    }
+  }
+  try {
+    Get-GraphAPI -method post -endpoint $endpoint -headers $headers -body $body -beta -Verbose:$VerbosePreference | Out-Null
+  }
+  catch {
+    throw "Unable to add token. $($_.Exception.Message)"
+  }
+}
+#EndRegion '.\Public\Set-GraphOATHTokenAssignment.ps1' 32
 #Region '.\Public\Set-GraphUser.ps1' 0
 function Set-GraphUser{
   [CmdletBinding()]

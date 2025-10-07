@@ -22,7 +22,7 @@ function Get-GraphServicePrincipals{
     $endpoint = "$($endpoint)(appid=$($id))"
   }
   $uriparts = [System.Collections.Generic.List[PSCustomObject]]@()
-  if ($PSBoundParameters.ContainsKey("displayName")) {$uriparts.add("`$filter=displayName -eq '$($displayName)'")}
+  if ($PSBoundParameters.ContainsKey("displayName")) {$uriparts.add("`$filter=startsWith(displayName,'$($displayName)')")}
   if ($PSBoundParameters.ContainsKey("filter")) {$uriparts.add("`$filter=$($filter)")}
   if ($PSBoundParameters.ContainsKey("fields")) {$uriparts.add("`$select=$($fields)")}
   # Generate the final API endppoint URI

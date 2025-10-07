@@ -9,6 +9,7 @@ function Get-GraphDevice{
     [Parameter()][ValidateNotNullOrEmpty()][string[]]$deviceId,
     [Parameter()][ValidateNotNullOrEmpty()][bool]$accountEnabled,
     [Parameter()][ValidateNotNullOrEmpty()][string]$displayName,
+    [Parameter()][ValidateNotNullOrEmpty()][string]$filter,
     [Parameter()][ValidateNotNullOrEmpty()][string]$fields
   )
   if(!$(Test-GraphAcessToken $script:graphAccessToken)){
@@ -24,6 +25,9 @@ function Get-GraphDevice{
   }
   if($deviceId.count -eq 1){  
     $filters.Add("deviceId eq '$($deviceId)'") | Out-Null
+  }
+  if ($PSBoundParameters.ContainsKey("filter")){
+    $filters.Add($filter) | Out-Null
   }
   $batch = $false
   # General endpoint
