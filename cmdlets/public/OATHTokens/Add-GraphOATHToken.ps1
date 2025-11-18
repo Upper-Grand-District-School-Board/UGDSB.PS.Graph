@@ -36,29 +36,3 @@ function Add-GraphOATHToken {
     throw "Unable to add token. $($_.Exception.Message)"
   }
 }
-
-<#
-  # Get Graph Header
-  $headers = Get-GraphHeader   
-  $endpoint = "directory/authenticationMethodDevices/hardwareOathDevices"
-  $body = @{
-    "serialNumber"          = $serialNumber
-    "manufacturer"          = $manufacturer
-    "model"                 = $model
-    "secretKey"             = $secretKey
-    "timeIntervalInSeconds" = $timeIntervalInSeconds
-  }
-  if ($PSBoundParameters.ContainsKey("assignTo")) {
-    $body["assignTo"] = @{id = $assignTo }
-  }
-  try {
-    $results = Get-GraphAPI -method post -endpoint $endpoint -headers $headers -body $body -beta -Verbose:$VerbosePreference
-    $results = ($results | ConvertFrom-Json)
-    if($results.error){
-      throw "Unable to add token. Code: $($results.error.code). Message: $($results.error.message)"
-    }
-  }
-  catch {
-    throw "Unable to add token. $($_.Exception.Message)"
-  }
-#>
