@@ -1,4 +1,5 @@
-﻿#Region '.\Public\Add-GraphGroupMember.ps1' 0
+﻿#Region '.\Public\Add-GraphGroupMember.ps1' -1
+
 function Add-GraphGroupMember{
   [CmdletBinding()]
   param(
@@ -47,7 +48,8 @@ function Add-GraphGroupMember{
   }  
 }
 #EndRegion '.\Public\Add-GraphGroupMember.ps1' 48
-#Region '.\Public\Add-GraphIntuneAppAddToESP.ps1' 0
+#Region '.\Public\Add-GraphIntuneAppAddToESP.ps1' -1
+
 function Add-GraphIntuneAppAddToESP{
   [CmdletBinding()]
   param(
@@ -95,7 +97,8 @@ function Add-GraphIntuneAppAddToESP{
   }
 }
 #EndRegion '.\Public\Add-GraphIntuneAppAddToESP.ps1' 47
-#Region '.\Public\Add-GraphIntuneAppAssignment.ps1' 0
+#Region '.\Public\Add-GraphIntuneAppAssignment.ps1' -1
+
 function Add-GraphIntuneAppAssignment{
   [CmdletBinding()]
   param(
@@ -178,7 +181,8 @@ function Add-GraphIntuneAppAssignment{
   }
 }
 #EndRegion '.\Public\Add-GraphIntuneAppAssignment.ps1' 82
-#Region '.\Public\Add-GraphOATHToken.ps1' 0
+#Region '.\Public\Add-GraphOATHToken.ps1' -1
+
 function Add-GraphOATHToken {
   [CmdletBinding()]
   param(
@@ -244,7 +248,8 @@ function Add-GraphOATHToken {
   }
 #>
 #EndRegion '.\Public\Add-GraphOATHToken.ps1' 65
-#Region '.\Public\Copy-GraphIntuneAppAssignments.ps1' 0
+#Region '.\Public\Copy-GraphIntuneAppAssignments.ps1' -1
+
 function Copy-GraphIntuneAppAssignments{
   [CmdletBinding()]
   param(
@@ -277,7 +282,8 @@ function Copy-GraphIntuneAppAssignments{
   }
 }
 #EndRegion '.\Public\Copy-GraphIntuneAppAssignments.ps1' 32
-#Region '.\Public\Disable-GraphUser.ps1' 0
+#Region '.\Public\Disable-GraphUser.ps1' -1
+
 function Disable-GraphUser{
   [CmdletBinding()]
   param(
@@ -301,7 +307,8 @@ function Disable-GraphUser{
   Invoke-RestMethod -Method PATCH -Uri $endpoint -Headers $headers -body ($body | ConvertTo-Json) -StatusCodeVariable statusCode
 }
 #EndRegion '.\Public\Disable-GraphUser.ps1' 23
-#Region '.\Public\Enter-GraphOATHTokenActivation.ps1' 0
+#Region '.\Public\Enter-GraphOATHTokenActivation.ps1' -1
+
 function Enter-GraphOATHTokenActivation{
   [CmdletBinding(DefaultParameterSetName = "all")]
   param(  
@@ -333,7 +340,8 @@ function Enter-GraphOATHTokenActivation{
   }  
 }
 #EndRegion '.\Public\Enter-GraphOATHTokenActivation.ps1' 31
-#Region '.\Public\Get-GraphAccessPackageAssignments.ps1' 0
+#Region '.\Public\Get-GraphAccessPackageAssignments.ps1' -1
+
 function Get-GraphAccessPackageAssignments{
   [cmdletBinding()]
   param(
@@ -391,7 +399,8 @@ function Get-GraphAccessPackageAssignments{
   return $List    
 }
 #EndRegion '.\Public\Get-GraphAccessPackageAssignments.ps1' 57
-#Region '.\Public\Get-GraphAccessPackageCatalog.ps1' 0
+#Region '.\Public\Get-GraphAccessPackageCatalog.ps1' -1
+
 function Get-GraphAccessPackageCatalog{
   [cmdletBinding()]
   param(
@@ -427,7 +436,8 @@ function Get-GraphAccessPackageCatalog{
   return $List
 }
 #EndRegion '.\Public\Get-GraphAccessPackageCatalog.ps1' 35
-#Region '.\Public\Get-GraphAccessPackages.ps1' 0
+#Region '.\Public\Get-GraphAccessPackages.ps1' -1
+
 function Get-GraphAccessPackages {
   [cmdletBinding()]
   param(
@@ -467,7 +477,8 @@ function Get-GraphAccessPackages {
   return $List    
 }
 #EndRegion '.\Public\Get-GraphAccessPackages.ps1' 39
-#Region '.\Public\Get-GraphAccessToken.ps1' 0
+#Region '.\Public\Get-GraphAccessToken.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is designed to use MSAL.PS to get an access token through an app registration, and then store in a global access token variable
@@ -518,7 +529,8 @@ function Get-GraphAccessToken{
   }
 }
 #EndRegion '.\Public\Get-GraphAccessToken.ps1' 50
-#Region '.\Public\Get-GraphAPI.ps1' 0
+#Region '.\Public\Get-GraphAPI.ps1' -1
+
 function Get-GraphAPI {
   [CmdletBinding()]
   [OutputType([System.Collections.Generic.List[PSCustomObject]])]
@@ -557,7 +569,8 @@ function Get-GraphAPI {
   } 
 }
 #EndRegion '.\Public\Get-GraphAPI.ps1' 38
-#Region '.\Public\Get-GraphApplicationDirectoryExtension.ps1' 0
+#Region '.\Public\Get-GraphApplicationDirectoryExtension.ps1' -1
+
 function Get-GraphApplicationDirectoryExtension{
   [CmdletBinding()]
   param(
@@ -586,7 +599,8 @@ function Get-GraphApplicationDirectoryExtension{
   
 }
 #EndRegion '.\Public\Get-GraphApplicationDirectoryExtension.ps1' 28
-#Region '.\Public\Get-GraphApplications.ps1' 0
+#Region '.\Public\Get-GraphApplications.ps1' -1
+
 function Get-GraphApplications{
   [CmdletBinding(DefaultParameterSetName = "All")]
   param(
@@ -640,7 +654,8 @@ function Get-GraphApplications{
   }
 }
 #EndRegion '.\Public\Get-GraphApplications.ps1' 53
-#Region '.\Public\Get-GraphAutopilotDevices.ps1' 0
+#Region '.\Public\Get-GraphAutopilotDevices.ps1' -1
+
 function Get-GraphAutopilotDevices{
   [CmdletBinding()]
   [OutputType([System.Collections.Generic.List[PSCustomObject]])]  
@@ -695,7 +710,8 @@ function Get-GraphAutopilotDevices{
 
 }
 #EndRegion '.\Public\Get-GraphAutopilotDevices.ps1' 54
-#Region '.\Public\Get-GraphAutopilotInformation.ps1' 0
+#Region '.\Public\Get-GraphAutopilotInformation.ps1' -1
+
 function Get-GraphAutopilotInformation {
   [CmdletBinding()]
   param(
@@ -752,7 +768,8 @@ function Get-GraphAutopilotInformation {
   return $deviceList
 }
 #EndRegion '.\Public\Get-GraphAutopilotInformation.ps1' 56
-#Region '.\Public\Get-GraphDevice.ps1' 0
+#Region '.\Public\Get-GraphDevice.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is designed to get devices from Azure ID
@@ -770,6 +787,12 @@ function Get-GraphDevice{
   if(!$(Test-GraphAcessToken $script:graphAccessToken)){
     throw "Please Call Get-GraphAccessToken before calling this cmdlet"
   } 
+  if($id -match ","){
+    $id = ($id -split ",").Trim()
+  }
+  if($deviceId -match ","){
+    $deviceId = ($deviceId -split ",").Trim()
+  }  
   # Create empty list
   $filters =  [System.Collections.Generic.List[PSCustomObject]]@()  
   if($displayName){
@@ -911,8 +934,9 @@ function Get-GraphDevice{
     return $deviceList
   }
 }
-#EndRegion '.\Public\Get-GraphDevice.ps1' 159
-#Region '.\Public\Get-GraphGroup.ps1' 0
+#EndRegion '.\Public\Get-GraphDevice.ps1' 165
+#Region '.\Public\Get-GraphGroup.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is designed to query graph for Entra ID groups
@@ -974,7 +998,8 @@ function Get-GraphGroup{
   }
 }
 #EndRegion '.\Public\Get-GraphGroup.ps1' 61
-#Region '.\Public\Get-GraphGroupMembers.ps1' 0
+#Region '.\Public\Get-GraphGroupMembers.ps1' -1
+
 #https://learn.microsoft.com/en-us/graph/api/group-list-members?view=graph-rest-beta&tabs=http
 function Get-GraphGroupMembers{
   [CmdletBinding()]
@@ -1024,7 +1049,8 @@ function Get-GraphGroupMembers{
   }
 }
 #EndRegion '.\Public\Get-GraphGroupMembers.ps1' 49
-#Region '.\Public\Get-GraphHeader.ps1' 0
+#Region '.\Public\Get-GraphHeader.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is designed to format the graph header for the REST api calls
@@ -1051,7 +1077,8 @@ function Get-GraphHeader{
   return $headerVars
 }
 #EndRegion '.\Public\Get-GraphHeader.ps1' 26
-#Region '.\Public\Get-GraphIntuneAPNCertificate.ps1' 0
+#Region '.\Public\Get-GraphIntuneAPNCertificate.ps1' -1
+
 function Get-GraphIntuneAPNCertificate{
   [CmdletBinding()]
   param()
@@ -1069,7 +1096,8 @@ function Get-GraphIntuneAPNCertificate{
   return $results
 }
 #EndRegion '.\Public\Get-GraphIntuneAPNCertificate.ps1' 17
-#Region '.\Public\Get-GraphIntuneApp.ps1' 0
+#Region '.\Public\Get-GraphIntuneApp.ps1' -1
+
 function Get-GraphIntuneApp{
   [CmdletBinding(DefaultParameterSetName = 'All')]
   param(
@@ -1130,7 +1158,8 @@ function Get-GraphIntuneApp{
   return $applicationList
 }
 #EndRegion '.\Public\Get-GraphIntuneApp.ps1' 60
-#Region '.\Public\Get-GraphIntuneAppAssignment.ps1' 0
+#Region '.\Public\Get-GraphIntuneAppAssignment.ps1' -1
+
 function Get-GraphIntuneAppAssignment{
   [CmdletBinding()]
   param(
@@ -1142,7 +1171,8 @@ function Get-GraphIntuneAppAssignment{
   return $results.value
 }
 #EndRegion '.\Public\Get-GraphIntuneAppAssignment.ps1' 11
-#Region '.\Public\Get-GraphIntuneDEPCertificate.ps1' 0
+#Region '.\Public\Get-GraphIntuneDEPCertificate.ps1' -1
+
 function Get-GraphIntuneDEPCertificate{
   [CmdletBinding()]
   param()
@@ -1160,7 +1190,8 @@ function Get-GraphIntuneDEPCertificate{
   return $results.Value  
 }
 #EndRegion '.\Public\Get-GraphIntuneDEPCertificate.ps1' 17
-#Region '.\Public\Get-GraphIntuneEnrollmentStatusPage.ps1' 0
+#Region '.\Public\Get-GraphIntuneEnrollmentStatusPage.ps1' -1
+
 function Get-GraphIntuneEnrollmentStatusPage{
   [CmdletBinding()]
   param(
@@ -1203,7 +1234,8 @@ function Get-GraphIntuneEnrollmentStatusPage{
   return $esplist  
 }
 #EndRegion '.\Public\Get-GraphIntuneEnrollmentStatusPage.ps1' 42
-#Region '.\Public\Get-GraphIntuneFilters.ps1' 0
+#Region '.\Public\Get-GraphIntuneFilters.ps1' -1
+
 function Get-GraphIntuneFilters{
   [CmdletBinding()]
   param(
@@ -1252,7 +1284,8 @@ function Get-GraphIntuneFilters{
   }  
 }
 #EndRegion '.\Public\Get-GraphIntuneFilters.ps1' 48
-#Region '.\Public\Get-GraphIntuneVPPCertificate.ps1' 0
+#Region '.\Public\Get-GraphIntuneVPPCertificate.ps1' -1
+
 function Get-GraphIntuneVPPCertificate{
   [CmdletBinding()]
   param()
@@ -1270,7 +1303,8 @@ function Get-GraphIntuneVPPCertificate{
   return $results.Value
 }
 #EndRegion '.\Public\Get-GraphIntuneVPPCertificate.ps1' 17
-#Region '.\Public\Get-GraphMail.ps1' 0
+#Region '.\Public\Get-GraphMail.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is designed to read email from a specific mailbox
@@ -1335,7 +1369,8 @@ function Get-GraphMail{
   }
 }
 #EndRegion '.\Public\Get-GraphMail.ps1' 64
-#Region '.\Public\Get-GraphMailAttachment.ps1' 0
+#Region '.\Public\Get-GraphMailAttachment.ps1' -1
+
 function Get-GraphMailAttachment{
   [CmdletBinding()]
   param(
@@ -1353,7 +1388,8 @@ function Get-GraphMailAttachment{
   return $results.results.value
 }
 #EndRegion '.\Public\Get-GraphMailAttachment.ps1' 17
-#Region '.\Public\Get-GraphMailAttachmentContent.ps1' 0
+#Region '.\Public\Get-GraphMailAttachmentContent.ps1' -1
+
 function Get-GraphMailAttachmentContent{
   [CmdletBinding()]
   param(
@@ -1369,7 +1405,8 @@ function Get-GraphMailAttachmentContent{
   Invoke-RestMethod -method "GET" -uri "https://graph.microsoft.com/beta/users/$($mailbox)/messages/$($messageid)/attachments/$($attachmentid)/`$value" -Headers $headers -OutFile $filename
 }
 #EndRegion '.\Public\Get-GraphMailAttachmentContent.ps1' 15
-#Region '.\Public\Get-GraphMailFolder.ps1' 0
+#Region '.\Public\Get-GraphMailFolder.ps1' -1
+
 function Get-GraphMailFolder {
   [CmdletBinding()]
   param(
@@ -1413,7 +1450,8 @@ function Get-GraphMailFolder {
   return $mailfolders
 }
 #EndRegion '.\Public\Get-GraphMailFolder.ps1' 43
-#Region '.\Public\Get-GraphMailRules.ps1' 0
+#Region '.\Public\Get-GraphMailRules.ps1' -1
+
 function Get-GraphMailRules {
   [CmdletBinding()]
   [OutputType([System.Collections.Generic.List[PSCustomObject]])]
@@ -1436,7 +1474,8 @@ function Get-GraphMailRules {
   $results.value
 }
 #EndRegion '.\Public\Get-GraphMailRules.ps1' 22
-#Region '.\Public\Get-GraphManagedDevice.ps1' 0
+#Region '.\Public\Get-GraphManagedDevice.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is designed to get managed devices (intune) from the graph endpoints
@@ -1605,7 +1644,8 @@ function Get-GraphManagedDevice{
   return $deviceList
 }
 #EndRegion '.\Public\Get-GraphManagedDevice.ps1' 168
-#Region '.\Public\Get-GraphOATHToken.ps1' 0
+#Region '.\Public\Get-GraphOATHToken.ps1' -1
+
 function Get-GraphOATHToken {
   [CmdletBinding(DefaultParameterSetName = "all")]
   param(
@@ -1679,7 +1719,8 @@ function Get-GraphOATHToken {
   }    
 }
 #EndRegion '.\Public\Get-GraphOATHToken.ps1' 73
-#Region '.\Public\Get-GraphSerivcePrincipalsSyncJobs.ps1' 0
+#Region '.\Public\Get-GraphSerivcePrincipalsSyncJobs.ps1' -1
+
 function Get-GraphSerivcePrincipalsSyncJobs{
   [CmdletBinding()]
   param(
@@ -1700,7 +1741,8 @@ function Get-GraphSerivcePrincipalsSyncJobs{
   return $results.value
 }
 #EndRegion '.\Public\Get-GraphSerivcePrincipalsSyncJobs.ps1' 20
-#Region '.\Public\Get-GraphServicePrincipals.ps1' 0
+#Region '.\Public\Get-GraphServicePrincipals.ps1' -1
+
 function Get-GraphServicePrincipals{
   [CmdletBinding(DefaultParameterSetName = "All")]
   param(
@@ -1760,7 +1802,8 @@ function Get-GraphServicePrincipals{
   }
 }
 #EndRegion '.\Public\Get-GraphServicePrincipals.ps1' 59
-#Region '.\Public\Get-GraphSignInAuditLogs.ps1' 0
+#Region '.\Public\Get-GraphSignInAuditLogs.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is designed to query the sign in logs for the users in the entra id tenant
@@ -1851,7 +1894,8 @@ function Get-GraphSignInAuditLogs{
   return $signinList
 }
 #EndRegion '.\Public\Get-GraphSignInAuditLogs.ps1' 90
-#Region '.\Public\Get-GraphUser.ps1' 0
+#Region '.\Public\Get-GraphUser.ps1' -1
+
 function Get-GraphUser {
   [CmdletBinding(DefaultParameterSetName = "All")]
   [OutputType([System.Collections.Generic.List[PSCustomObject]])]
@@ -1919,7 +1963,8 @@ function Get-GraphUser {
   }
 }
 #EndRegion '.\Public\Get-GraphUser.ps1' 67
-#Region '.\Public\Get-GraphUserGroups.ps1' 0
+#Region '.\Public\Get-GraphUserGroups.ps1' -1
+
 
 function Get-GraphUserGroups {
   [CmdletBinding()]
@@ -1966,7 +2011,8 @@ function Get-GraphUserGroups {
   return $groupList
 }
 #EndRegion '.\Public\Get-GraphUserGroups.ps1' 46
-#Region '.\Public\Get-GraphUserLicenseDetails.ps1' 0
+#Region '.\Public\Get-GraphUserLicenseDetails.ps1' -1
+
 function Get-GraphUserLicenseDetails{
   [cmdletbinding()]
   param(
@@ -1996,7 +2042,8 @@ function Get-GraphUserLicenseDetails{
   return $results.Results.value
 }
 #EndRegion '.\Public\Get-GraphUserLicenseDetails.ps1' 29
-#Region '.\Public\Move-GraphMail.ps1' 0
+#Region '.\Public\Move-GraphMail.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is designed to move emails between folders in a mailbox
@@ -2033,7 +2080,8 @@ function Move-GraphMail{
   }      
 }
 #EndRegion '.\Public\Move-GraphMail.ps1' 36
-#Region '.\Public\New-GraphApplicationDirectoryExtension.ps1' 0
+#Region '.\Public\New-GraphApplicationDirectoryExtension.ps1' -1
+
 function New-GraphApplicationDirectoryExtension{
   [CmdletBinding()]
   param(
@@ -2069,7 +2117,8 @@ function New-GraphApplicationDirectoryExtension{
   return $results.Results   
 }
 #EndRegion '.\Public\New-GraphApplicationDirectoryExtension.ps1' 35
-#Region '.\Public\New-GraphApplicationPassword.ps1' 0
+#Region '.\Public\New-GraphApplicationPassword.ps1' -1
+
 function New-GraphApplicationPassword{
   [CmdletBinding()]
   param(
@@ -2103,7 +2152,8 @@ function New-GraphApplicationPassword{
   return $results.Results   
 }
 #EndRegion '.\Public\New-GraphApplicationPassword.ps1' 33
-#Region '.\Public\New-GraphApplications.ps1' 0
+#Region '.\Public\New-GraphApplications.ps1' -1
+
 function New-GraphApplications{
   [CmdletBinding()]
   param(
@@ -2146,7 +2196,8 @@ function New-GraphApplications{
   return $results.Results
 }
 #EndRegion '.\Public\New-GraphApplications.ps1' 42
-#Region '.\Public\New-GraphGroup.ps1' 0
+#Region '.\Public\New-GraphGroup.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is designed to create a new Entra ID group via graph
@@ -2194,7 +2245,8 @@ function New-GraphGroup{
   
 }
 #EndRegion '.\Public\New-GraphGroup.ps1' 47
-#Region '.\Public\New-GraphServicePrinciapls.ps1' 0
+#Region '.\Public\New-GraphServicePrinciapls.ps1' -1
+
 function New-GraphServicePrinciapls{
   [CmdletBinding()]
   param(
@@ -2223,7 +2275,8 @@ function New-GraphServicePrinciapls{
   return $results.Results  
 }
 #EndRegion '.\Public\New-GraphServicePrinciapls.ps1' 28
-#Region '.\Public\Remove-GraphApplicationDirectoryExtension.ps1' 0
+#Region '.\Public\Remove-GraphApplicationDirectoryExtension.ps1' -1
+
 function Remove-GraphApplicationDirectoryExtension{
   [CmdletBinding()]
   param(
@@ -2247,7 +2300,8 @@ function Remove-GraphApplicationDirectoryExtension{
   }   
 }
 #EndRegion '.\Public\Remove-GraphApplicationDirectoryExtension.ps1' 23
-#Region '.\Public\Remove-GraphApplicationPassword.ps1' 0
+#Region '.\Public\Remove-GraphApplicationPassword.ps1' -1
+
 function Remove-GraphApplicationPassword{
   [CmdletBinding()]
   param(
@@ -2276,7 +2330,8 @@ function Remove-GraphApplicationPassword{
   } 
 }
 #EndRegion '.\Public\Remove-GraphApplicationPassword.ps1' 28
-#Region '.\Public\Remove-GraphApplications.ps1' 0
+#Region '.\Public\Remove-GraphApplications.ps1' -1
+
 function Remove-GraphApplications{
   [CmdletBinding()]
   param(
@@ -2300,7 +2355,8 @@ function Remove-GraphApplications{
   }   
 }
 #EndRegion '.\Public\Remove-GraphApplications.ps1' 23
-#Region '.\Public\Remove-GraphAutopilotDevice.ps1' 0
+#Region '.\Public\Remove-GraphAutopilotDevice.ps1' -1
+
 function Remove-GraphAutopilotDevice{
   [CmdletBinding()]
   param(
@@ -2322,7 +2378,8 @@ function Remove-GraphAutopilotDevice{
   } 
 }
 #EndRegion '.\Public\Remove-GraphAutopilotDevice.ps1' 21
-#Region '.\Public\Remove-GraphDevice.ps1' 0
+#Region '.\Public\Remove-GraphDevice.ps1' -1
+
 function Remove-GraphDevice{
   [CmdletBinding()]
   param(
@@ -2344,7 +2401,8 @@ function Remove-GraphDevice{
   }   
 }
 #EndRegion '.\Public\Remove-GraphDevice.ps1' 21
-#Region '.\Public\Remove-GraphGroupMember.ps1' 0
+#Region '.\Public\Remove-GraphGroupMember.ps1' -1
+
 function Remove-GraphGroupMember{
   [CmdletBinding()]
   param(
@@ -2386,7 +2444,8 @@ function Remove-GraphGroupMember{
   }      
 }
 #EndRegion '.\Public\Remove-GraphGroupMember.ps1' 41
-#Region '.\Public\Remove-GraphIntuneApp.ps1' 0
+#Region '.\Public\Remove-GraphIntuneApp.ps1' -1
+
 function Remove-GraphIntuneApp{
   [CmdletBinding()]
   param(
@@ -2398,7 +2457,8 @@ function Remove-GraphIntuneApp{
   Invoke-RestMethod -Method Delete -Uri $endpoint -Headers $headers -StatusCodeVariable statusCode | Out-Null
 }
 #EndRegion '.\Public\Remove-GraphIntuneApp.ps1' 11
-#Region '.\Public\Remove-GraphIntuneDevicePrimaryUser.ps1' 0
+#Region '.\Public\Remove-GraphIntuneDevicePrimaryUser.ps1' -1
+
 function Remove-GraphIntuneDevicePrimaryUser{
   [CmdletBinding()]
   param(
@@ -2413,7 +2473,8 @@ function Remove-GraphIntuneDevicePrimaryUser{
   Invoke-RestMethod -method "DELETE" -Uri $uri -Headers $headers -StatusCodeVariable "statusCode"  
 }
 #EndRegion '.\Public\Remove-GraphIntuneDevicePrimaryUser.ps1' 14
-#Region '.\Public\Remove-GraphMailRule.ps1' 0
+#Region '.\Public\Remove-GraphMailRule.ps1' -1
+
 function Remove-GraphMailRule{
   [CmdletBinding()]
   param(
@@ -2435,7 +2496,8 @@ function Remove-GraphMailRule{
   Invoke-RestMethod -Method Delete -Uri $endpoint -Headers $headers -StatusCodeVariable statusCode | Out-Null
 }
 #EndRegion '.\Public\Remove-GraphMailRule.ps1' 21
-#Region '.\Public\Remove-GraphManagedDevice.ps1' 0
+#Region '.\Public\Remove-GraphManagedDevice.ps1' -1
+
 function Remove-GraphManagedDevice{
   [CmdletBinding()]
   param(
@@ -2457,7 +2519,8 @@ function Remove-GraphManagedDevice{
   }   
 }
 #EndRegion '.\Public\Remove-GraphManagedDevice.ps1' 21
-#Region '.\Public\Remove-GraphOATHToken.ps1' 0
+#Region '.\Public\Remove-GraphOATHToken.ps1' -1
+
 function Remove-GraphOATHToken{
   [CmdletBinding()]
   param(  
@@ -2489,7 +2552,8 @@ function Remove-GraphOATHToken{
   }    
 }
 #EndRegion '.\Public\Remove-GraphOATHToken.ps1' 31
-#Region '.\Public\Remove-GraphOATHTokenAssignment.ps1' 0
+#Region '.\Public\Remove-GraphOATHTokenAssignment.ps1' -1
+
 function Remove-GraphOATHTokenAssignment{
   [CmdletBinding(DefaultParameterSetName = "all")]
   param(  
@@ -2517,7 +2581,8 @@ function Remove-GraphOATHTokenAssignment{
   }  
 }
 #EndRegion '.\Public\Remove-GraphOATHTokenAssignment.ps1' 27
-#Region '.\Public\Send-GraphMailMessage.ps1' 0
+#Region '.\Public\Send-GraphMailMessage.ps1' -1
+
 function Send-GraphMailMessage{
   [CmdletBinding()]
   param(
@@ -2588,7 +2653,8 @@ function Send-GraphMailMessage{
   return $statuscode
 }
 #EndRegion '.\Public\Send-GraphMailMessage.ps1' 70
-#Region '.\Public\Set-GraphApplications.ps1' 0
+#Region '.\Public\Set-GraphApplications.ps1' -1
+
 # https://learn.microsoft.com/en-us/graph/api/application-update?view=graph-rest-beta&tabs=http
 function Set-GraphApplications{
   [CmdletBinding()]
@@ -2619,7 +2685,8 @@ function Set-GraphApplications{
   }
 }
 #EndRegion '.\Public\Set-GraphApplications.ps1' 30
-#Region '.\Public\Set-GraphAutopilotInformation.ps1' 0
+#Region '.\Public\Set-GraphAutopilotInformation.ps1' -1
+
 function Set-GraphAutopilotInformation {
   param (
     [Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][string]$deviceId,
@@ -2657,34 +2724,48 @@ function Set-GraphAutopilotInformation {
   }   
 }
 #EndRegion '.\Public\Set-GraphAutopilotInformation.ps1' 37
-#Region '.\Public\Set-GraphDevice.ps1' 0
+#Region '.\Public\Set-GraphDevice.ps1' -1
+
 function Set-GraphDevice {
   [CmdletBinding()]
   param(
-    [Parameter()][ValidateNotNullOrEmpty()][string[]]$id,
-    [Parameter()][ValidateNotNullOrEmpty()][string[]]$deviceId,
-    [Parameter()][hashtable]$extensionProperties,
+    [Parameter(Mandatory = $True, ParameterSetName = "id")][ValidateNotNullOrEmpty()][string[]]$id,
+    [Parameter(Mandatory = $True, ParameterSetName = "deviceid")][ValidateNotNullOrEmpty()][string[]]$deviceId,
+    [Parameter()][hashtable]$Properties,
     [Parameter()][hashtable]$extensionAttributes
   )
   if (!$(Test-GraphAcessToken $script:graphAccessToken)) {
     throw "Please Call Get-GraphAccessToken before calling this cmdlet"
-  } 
-  # General endpoint
-  $endpoint = "devices"  
+  }
+  if($id -match ","){
+    $id = ($id -split ",").Trim()
+  }
+  if($deviceId -match ","){
+    $deviceId = ($deviceId -split ",").Trim()
+  }    
+  # Should this be a batch job
   $batch = $false
-  if ($id.count -eq 1) {
+  # Default endpoint
+  $endpoint = "devices"
+  # If only a single Object ID is passed
+  if ($PSBoundParameters.ContainsKey("id") -and $id.count -eq 1) {
     $endpoint = "$($endpoint)/$($id)"
   }
-  elseif ($id.count -gt 1 -or $deviceId.count -gt 1) {
+  # If only a single device ID is passed
+  elseif ($PSBoundParameters.ContainsKey("deviceId") -and $deviceId.count -eq 1) {
+    $endpoint = "$($endpoint)(deviceId='{$($deviceId)}')"
+  }
+  # Otherwise it is going to be a batch job
+  else {
     $batch = $true
   }
   # Get Graph Headers for Call
   $headers = Get-GraphHeader  
   # Create base body object
   $body = @{}
-  # If extension properties are passed, add them to the request body
-  if ($PSBoundParameters.ContainsKey("extensionProperties")) {
-    foreach ($item in $extensionProperties.GetEnumerator()) {
+  # If properties are passed, add them to the request body
+  if ($PSBoundParameters.ContainsKey("Properties")) {
+    foreach ($item in $Properties.GetEnumerator()) {
       $body.Add($item.Key, $item.Value) | Out-Null
     }
   }
@@ -2709,70 +2790,54 @@ function Set-GraphDevice {
     }
   }
   else {
-
     $objid = 1
     $batchObj = [System.Collections.Generic.List[PSCustomObject]]@()
     $batches = [System.Collections.Generic.List[PSCustomObject]]@()
-    # if trying to return multiple ids
-    if($id.count -gt 1){
-      foreach($device in $id){
-        if($objid -lt 21){
+    if ($id.count -gt 1) {
+      $list = $id
+    }
+    else {
+      $list = $deviceId
+    }
+    foreach ($device in $list) {
+      if ($objid -lt 21) {
+        if ($id) {
           $uri = "$($endpoint)/$($device)"
-          $obj = [PSCustomObject]@{
-            "id" = $objid
-            "method" = "PATCH"
-            "url" = $uri
-            "body" = $body
-            "headers" = @{"Content-Type" = "application/json"}
-          }
-          $batchObj.Add($obj) | Out-Null
-          $objid++          
         }
-        if($objId -eq 21){
-          $batches.Add($batchObj) | Out-Null
-          $batchObj = $null
-          $batchObj = [System.Collections.Generic.List[PSCustomObject]]@()
-          $objid = 1 
-        }        
-      }
-      $batches.Add($batchObj) | Out-Null
-    }
-    # if trying to return multiple deviceids
-    elseif($deviceId.Count -gt 1){
-      foreach($device in $deviceId){
-        if($objid -lt 21){
-          $uri = "$($endpoint)/$($device)"
-          $obj = [PSCustomObject]@{
-            "id" = $objid
-            "method" = "PATCH"
-            "url" = $uri
-            "body" = $body
-            "headers" = @{"Content-Type" = "application/json"}
-          }
-          $batchObj.Add($obj) | Out-Null
-          $objid++          
+        else {
+          $uri = "$($endpoint)(deviceId='{$($device)}')"
         }
-        if($objId -eq 21){
-          $batches.Add($batchObj) | Out-Null
-          $batchObj = $null
-          $batchObj = [System.Collections.Generic.List[PSCustomObject]]@()
-          $objid = 1 
-        }        
+        $obj = [PSCustomObject]@{
+          "id"      = $objid
+          "method"  = "PATCH"
+          "url"     = $uri
+          "body"    = $body
+          "headers" = @{"Content-Type" = "application/json" }
+        }
+        $batchObj.Add($obj) | Out-Null
+        $objid++ 
       }
-      $batches.Add($batchObj) | Out-Null
+      if ($objId -eq 21) {
+        $batches.Add($batchObj) | Out-Null
+        $batchObj = $null
+        $batchObj = [System.Collections.Generic.List[PSCustomObject]]@()
+        $objid = 1 
+      }        
     }
-    for($x = 0; $x -lt $batches.count; $x++){
-      if($batches[$x].count -gt 0){
-        $json = [PSCustomObject]@{
-          "requests" = $batches[$x] 
-        } | ConvertTo-JSON -Depth 10
-        $results = Invoke-RestMethod -Method "POST" -Uri "https://graph.microsoft.com/beta/`$batch" -Headers $headers -Body $json
-      }    
-    }
+    $batches.Add($batchObj) | Out-Null
   }
+  for ($x = 0; $x -lt $batches.count; $x++) {
+    if ($batches[$x].count -gt 0) {
+      $json = [PSCustomObject]@{
+        "requests" = $batches[$x] 
+      } | ConvertTo-JSON -Depth 10
+      $results = Invoke-RestMethod -Method "POST" -Uri "https://graph.microsoft.com/beta/`$batch" -Headers $headers -Body $json
+    }    
+  }   
 }
-#EndRegion '.\Public\Set-GraphDevice.ps1' 114
-#Region '.\Public\Set-GraphIntuneDevicePrimaryUser.ps1' 0
+#EndRegion '.\Public\Set-GraphDevice.ps1' 110
+#Region '.\Public\Set-GraphIntuneDevicePrimaryUser.ps1' -1
+
 function Set-GraphIntuneDevicePrimaryUser{
   param(
     [parameter(Mandatory = $true)][ValidateNotNullOrEmpty()][string]$deviceId,
@@ -2790,7 +2855,8 @@ function Set-GraphIntuneDevicePrimaryUser{
   Invoke-RestMethod -method "POST" -Uri $uri -Headers $headers -body ($body | ConvertTo-JSON) -StatusCodeVariable "statusCode"
 }
 #EndRegion '.\Public\Set-GraphIntuneDevicePrimaryUser.ps1' 17
-#Region '.\Public\Set-GraphMailRead.ps1' 0
+#Region '.\Public\Set-GraphMailRead.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is designed to mark a specific email as read
@@ -2825,7 +2891,8 @@ function Set-GraphMailRead{
   }  
 }
 #EndRegion '.\Public\Set-GraphMailRead.ps1' 34
-#Region '.\Public\Set-GraphOATHTokenAssignment.ps1' 0
+#Region '.\Public\Set-GraphOATHTokenAssignment.ps1' -1
+
 function Set-GraphOATHTokenAssignment{
   [CmdletBinding(DefaultParameterSetName = "all")]
   param(  
@@ -2858,7 +2925,8 @@ function Set-GraphOATHTokenAssignment{
   }
 }
 #EndRegion '.\Public\Set-GraphOATHTokenAssignment.ps1' 32
-#Region '.\Public\Set-GraphUser.ps1' 0
+#Region '.\Public\Set-GraphUser.ps1' -1
+
 function Set-GraphUser{
   [CmdletBinding()]
   param(
@@ -2896,7 +2964,8 @@ function Set-GraphUser{
   } 
 }
 #EndRegion '.\Public\Set-GraphUser.ps1' 37
-#Region '.\Public\Test-GraphAcessToken.ps1' 0
+#Region '.\Public\Test-GraphAcessToken.ps1' -1
+
 <#
   .DESCRIPTION
   This cmdlet is tests to see if the passed variable is not null, and expires in less than 10 minutes
@@ -2920,7 +2989,8 @@ function Test-GraphAcessToken{
   }
 }
 #EndRegion '.\Public\Test-GraphAcessToken.ps1' 23
-#Region '.\Public\Test-GraphIntuneAPNCertificate.ps1' 0
+#Region '.\Public\Test-GraphIntuneAPNCertificate.ps1' -1
+
 function Test-GraphIntuneAPNCertificate{
   [CmdletBinding()]
   param(
@@ -2986,7 +3056,8 @@ function Test-GraphIntuneAPNCertificate{
   return $APNExpirationStatus
 }
 #EndRegion '.\Public\Test-GraphIntuneAPNCertificate.ps1' 65
-#Region '.\Public\Test-GraphIntuneDEPCertificate.ps1' 0
+#Region '.\Public\Test-GraphIntuneDEPCertificate.ps1' -1
+
 function Test-GraphIntuneDEPCertificate{
   [CmdletBinding()]
   param(
@@ -3056,7 +3127,8 @@ function Test-GraphIntuneDEPCertificate{
   return $alerts  
 }
 #EndRegion '.\Public\Test-GraphIntuneDEPCertificate.ps1' 69
-#Region '.\Public\Test-GraphIntuneLicense.ps1' 0
+#Region '.\Public\Test-GraphIntuneLicense.ps1' -1
+
 function Test-GraphIntuneLicense{
   [CmdletBinding()]
   param(
@@ -3078,7 +3150,8 @@ function Test-GraphIntuneLicense{
   }
 }
 #EndRegion '.\Public\Test-GraphIntuneLicense.ps1' 21
-#Region '.\Public\Test-GraphIntuneVPPCertificate.ps1' 0
+#Region '.\Public\Test-GraphIntuneVPPCertificate.ps1' -1
+
 function Test-GraphIntuneVPPCertificate{
   [CmdletBinding()]
   param(

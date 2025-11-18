@@ -15,6 +15,12 @@ function Get-GraphDevice{
   if(!$(Test-GraphAcessToken $script:graphAccessToken)){
     throw "Please Call Get-GraphAccessToken before calling this cmdlet"
   } 
+  if($id -match ","){
+    $id = ($id -split ",").Trim()
+  }
+  if($deviceId -match ","){
+    $deviceId = ($deviceId -split ",").Trim()
+  }  
   # Create empty list
   $filters =  [System.Collections.Generic.List[PSCustomObject]]@()  
   if($displayName){

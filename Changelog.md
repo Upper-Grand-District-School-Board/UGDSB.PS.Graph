@@ -1,3 +1,8 @@
+# 0.2.3
+- Updated some device based calls
+- updated Microsoft.Identity.Client.dll
+
+
 # 0.2.0
 
 - Started Changelog file
